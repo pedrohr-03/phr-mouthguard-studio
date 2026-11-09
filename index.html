@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PHR STUDIO • Editor de Adesivos para Protetor Bucal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Audiowide&family=Bungee&family=Kanit:wght@400;700;900&family=Orbitron:wght@400;700;900&family=Oswald:wght@400;700&family=Rajdhani:wght@500;700&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#090909;
+  --panel:#121212;
+  --panel2:#171717;
+  --line:#2a2a2a;
+  --soft:#a5a5a5;
+  --text:#f5f5f5;
+  --accent:#e63535;
+  --accent2:#ffffff;
+  --ok:#57d39b;
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--text);
+  background:linear-gradient(180deg,#0a0a0a,#101010 35%,#0a0a0a);
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--text);background:var(--bg)}
+.header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 24px;border-bottom:1px solid var(--line);background:rgba(14,14,14,.97);position:sticky;top:0;z-index:30;backdrop-filter:blur(10px)}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand .name{font-weight:900;letter-spacing:.12em;font-size:24px}
+.brand .name span{color:var(--accent)}
+.brand .tag{font-size:11px;text-transform:uppercase;letter-spacing:.22em;color:#c9c9c9}
+.badges{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.badge{padding:7px 12px;border-radius:999px;border:1px solid #3b3b3b;background:#171717;font-size:12px;color:#efefef}
+.layout{display:grid;grid-template-columns:320px minmax(540px,1fr) 330px;min-height:calc(100vh - 78px)}
+.sidebar,.tools{padding:22px;background:var(--panel);overflow:auto}
+.sidebar{border-right:1px solid var(--line)}
+.tools{border-left:1px solid var(--line)}
+.main{padding:24px;min-width:0}
+h1{margin:0 0 8px;font-size:28px;line-height:1.08}
+h2{margin:0 0 14px;font-size:17px}
+.desc{font-size:13px;line-height:1.6;color:#b8b8b8;margin:0 0 18px}
+.block{margin-bottom:24px}
+.mini{font-size:11px;font-weight:800;letter-spacing:.17em;text-transform:uppercase;color:#b9b9b9;margin-bottom:10px}
+.catalog{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{appearance:none;border:1px solid #363636;border-radius:14px;background:linear-gradient(180deg,#1a1a1a,#151515);color:#fff;min-height:88px;padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:7px;transition:.16s transform,.16s border-color,.16s background}
+.tile:hover,.tile:focus-visible{border-color:var(--accent);background:linear-gradient(180deg,#1f1f1f,#171717);transform:translateY(-1px)}
+.tile .symbol{font-size:27px;line-height:1}
+.tile .nm{font-size:11px;color:#f3f3f3;text-align:center}
+.btn{appearance:none;border:0;border-radius:12px;padding:12px 14px;font-weight:800;cursor:pointer;font-family:inherit;transition:.15s transform,.15s opacity,.15s filter}
+.btn:hover{transform:translateY(-1px)}
+.btn.primary{background:var(--accent);color:white}
+.btn.secondary{background:#252525;color:#f1f1f1;border:1px solid #373737}
+.btn.ghost{background:#181818;color:#f1f1f1;border:1px dashed #444}
+.btn.danger{background:#381919;color:#ffd3d3;border:1px solid #5b2727}
+.full{width:100%}
+label{display:block;font-size:12px;color:#cecece;margin-bottom:6px}
+input,select,textarea{width:100%;background:#1a1a1a;color:#fff;border:1px solid #333;border-radius:10px;padding:10px;font:inherit}
+input[type=color]{height:40px;padding:4px;background:#1a1a1a}
+input[type=range]{accent-color:var(--accent)}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent)}
+input[type=file]{display:none}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.surface{background:var(--panel2);border:1px solid #2e2e2e;border-radius:18px;padding:18px;margin:16px 0 20px;box-shadow:0 12px 28px rgba(0,0,0,.22)}
+.surface-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:#cfcfcf;margin-bottom:14px}
+.measure{font-weight:800;color:#fff;background:#1f1f1f;border:1px solid #363636;padding:7px 10px;border-radius:999px}
+.workspace{background:radial-gradient(circle at top,#f8f8f8,#ececec);padding:22px 10px;border-radius:14px;overflow:hidden;position:relative}
+canvas{display:block;max-width:100%;height:auto;touch-action:none}
+#curved{width:100%;filter:drop-shadow(0 8px 16px rgba(0,0,0,.18));cursor:grab}
+#flat{width:100%;background:repeating-linear-gradient(90deg,#f8f8f8,#f8f8f8 18px,#eeeeee 18px,#eeeeee 36px),repeating-linear-gradient(0deg,transparent,transparent 18px,rgba(0,0,0,.03) 18px,rgba(0,0,0,.03) 36px);border-radius:12px;cursor:grab}
+.caption{font-size:12px;line-height:1.6;color:#bcbcbc;margin-top:10px}
+.notice{background:#171717;border:1px solid #2e2e2e;border-radius:14px;padding:14px;font-size:12px;line-height:1.65;color:#d4d4d4}
+.notice b{color:#fff}
+.layer-list{display:grid;gap:8px;max-height:220px;overflow:auto}
+.layer{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid #373737;background:#1b1b1b;color:#fff;border-radius:10px;padding:10px;text-align:left;cursor:pointer;font-size:12px}
+.layer.sel{border-color:var(--accent);box-shadow:0 0 0 1px rgba(230,53,53,.2) inset;background:#221818}
+.small{font-size:11px;color:#8f8f8f;line-height:1.6}
+.hr{height:1px;background:#2a2a2a;margin:16px 0}
+.outset{background:#131313;border:1px solid #2c2c2c;border-radius:14px;padding:14px}
+.kbd{display:inline-block;background:#0f0f0f;border:1px solid #393939;border-bottom-width:2px;border-radius:7px;padding:2px 7px;font-size:11px;color:#f5f5f5}
+.footerNote{margin-top:18px;font-size:11px;color:#888;line-height:1.65}
+@media (max-width:1220px){.layout{grid-template-columns:290px 1fr}.tools{grid-column:1 / -1;border-left:0;border-top:1px solid var(--line)}}
+@media (max-width:760px){.header{padding:14px 16px}.layout{display:block}.sidebar,.main,.tools{padding:16px}.catalog{grid-template-columns:repeat(3,minmax(0,1fr))}h1{font-size:23px}.row2,.row3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="brand">
+    <div class="name">PHR <span>STUDIO</span></div>
+    <div class="tag">ESTÚDIO DE PERSONALIZAÇÃO DE PROTETORES BUCAIS</div>
+  </div>
+  <div class="badges">
+    <span class="badge">Escala real • 125 × 16,5 mm</span>
+    <span class="badge">Exportação limpa • sem molde</span>
+    <span class="badge">PNG 1200 DPI • SVG</span>
+  </div>
+</header>
+<div class="layout">
+  <aside class="sidebar">
+    <h2>Personalize sua arte</h2>
+    <p class="desc">Importe sua própria imagem e combine com nomes, iniciais ou frases para criar o adesivo do seu protetor.</p>
+
+    <div class="block outset">
+      <div class="mini">Importar arte</div>
+      <label for="upload" class="btn ghost full" style="display:block;text-align:center;cursor:pointer">+ Importar PNG, JPG, WEBP ou SVG</label>
+      <input id="upload" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+      <div class="notice" style="margin-top:12px"><b>Recomendação:</b> para um melhor resultado, adicione imagens com <b>fundo transparente</b>, preferencialmente em PNG ou SVG. Imagens JPG geralmente possuem fundo preenchido.</div>
+    </div>
+
+    <div class="block outset">
+      <div class="mini">Texto personalizado</div>
+      <label for="newtext">Nome, iniciais ou frase curta</label>
+      <input id="newtext" value="PHR" placeholder="Digite aqui">
+      <button class="btn secondary full" id="addText" style="margin-top:10px">+ Adicionar texto</button>
+    </div>
+
+    <div class="block">
+      <div class="mini">Camadas</div>
+      <div id="layers" class="layer-list"></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <h1>Crie o adesivo do protetor bucal</h1>
+    <p class="desc">A prévia superior mostra a arte adaptada ao formato do protetor. A área de composição plana serve para posicionar com mais precisão. O arquivo final exportado sai <b>sem o desenho do molde</b>, apenas com o adesivo em escala correta.</p>
+
+    <div class="surface">
+      <div class="surface-head">
+        <b>Prévia curvada</b>
+        <span class="measure">recorte real do adesivo</span>
+      </div>
+      <div class="workspace"><canvas id="curved" width="1004" height="178"></canvas></div>
+      <div class="caption">Prévia visual do adesivo dentro do formato do protetor. O contorno aparece apenas na edição para referência e <b>não será exportado</b>.</div>
+    </div>
+
+    <div class="surface">
+      <div class="surface-head">
+        <b>Área de composição plana</b>
+        <span>Arraste os elementos com o mouse</span>
+      </div>
+      <canvas id="flat" width="1250" height="165"></canvas>
+      <div class="caption">Essa área retangular é usada para montar a arte. Depois o sistema mapeia a imagem para o recorte curvo do protetor.</div>
+    </div>
+
+    <div class="notice">
+      <b>Produção:</b> a exportação PNG é gerada em <b>1200 DPI</b> (aprox. 5906 × 780 px), e a exportação SVG sai com tamanho físico de <b>125 × 16,5 mm</b>.<br>
+      <b>Recomendação:</b> faça sempre 1 impressão de teste em <b>100%</b> antes de produzir vários adesivos, para validar o encaixe no protetor real.
+    </div>
+  </main>
+
+  <aside class="tools">
+    <h2>Ajustes da camada</h2>
+    <div class="block">
+      <label>Camada selecionada</label>
+      <input id="layername" disabled placeholder="Selecione uma camada">
+    </div>
+
+    <div class="block" id="textBlock" style="display:none">
+      <div class="mini">Texto</div>
+      <label for="edittext">Conteúdo</label>
+      <input id="edittext">
+      <div class="row2" style="margin-top:10px">
+        <div>
+          <label for="font">Fonte</label>
+          <select id="font"></select>
+          <div class="small" style="margin-top:5px">Fontes especiais exigem internet no primeiro carregamento.</div>
+        </div>
+        <div>
+          <label for="fontWeight">Peso</label>
+          <select id="fontWeight">
+            <option value="700">Bold</option>
+            <option value="800">Extra Bold</option>
+            <option value="900" selected>Black</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="block" id="colorBlock">
+      <div class="mini">Cor do texto</div>
+      <div class="row3">
+        <div>
+          <label for="color1">Principal</label>
+          <input type="color" id="color1" value="#ffffff">
+        </div>
+        <div id="secondaryColorField" style="display:none">
+          <label for="color2">Secundária</label>
+          <input type="color" id="color2" value="#e63535">
+        </div>
+        <div id="strokeColorField" style="display:none">
+          <label for="strokeColor">Contorno</label>
+          <input type="color" id="strokeColor" value="#101010">
+        </div>
+      </div>
+    </div>
+
+    <div class="block row2">
+      <div>
+        <label for="size">Tamanho</label>
+        <input id="size" type="range" min="10" max="340" value="100">
+        <div class="small" id="sizeValue">100%</div>
+      </div>
+      <div>
+        <label for="angle">Rotação</label>
+        <input id="angle" type="range" min="-180" max="180" value="0">
+        <div class="small" id="angleValue">0°</div>
+      </div>
+    </div>
+
+    <div class="block row2">
+      <button class="btn secondary" id="front">Trazer à frente</button>
+      <button class="btn danger" id="remove">Excluir</button>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="block">
+      <div class="mini">Fundo do adesivo</div>
+      <div class="row2">
+        <div>
+          <label for="background">Cor de base</label>
+          <input id="background" type="color" value="#111111">
+        </div>
+        <div>
+          <label for="transparent">Transparente</label>
+          <input id="transparent" type="checkbox" checked>
+        </div>
+      </div>
+      <div class="small" style="margin-top:10px">Quando marcado, o arquivo sai com fundo transparente e apenas a arte dentro do recorte do adesivo.</div>
+    </div>
+
+    <div class="block">
+      <div class="mini">Exportação final</div>
+      <button class="btn primary full" id="png">Exportar PNG 1200 DPI</button>
+      <button class="btn secondary full" id="svg" style="margin-top:10px">Exportar SVG em escala</button>
+      <button class="btn secondary full" id="print" style="margin-top:10px">Abrir página para impressão A4</button>
+      <div class="small" style="margin-top:10px">Todos os arquivos saem sem o contorno do molde. A impressão deve ser feita em 100%.</div>
+    </div>
+
+    <div class="block">
+      <button class="btn danger full" id="clear">Limpar tudo</button>
+    </div>
+
+    <div class="footerNote">Dicas: utilize imagens com fundo transparente, confira a prévia curvada e imprima um teste em escala 100% antes de fabricar em lote.</div>
+  </aside>
+</div>
+
+<script>
+const SHAPE = {"path": "M 4 25 L 4 46 L 6 54 L 12 66 L 26 84 L 38 96 L 53 107 L 70 115 L 106 128 L 183 146 L 196 147 L 226 153 L 268 157 L 280 160 L 306 161 L 353 167 L 488 173 L 593 170 L 694 163 L 773 154 L 778 152 L 826 145 L 874 134 L 884 130 L 900 127 L 936 114 L 948 108 L 962 98 L 984 76 L 994 60 L 1000 42 L 999 27 L 996 18 L 988 8 L 978 4 L 967 4 L 930 21 L 905 28 L 870 35 L 827 40 L 810 40 L 800 42 L 689 46 L 553 46 L 537 48 L 508 56 L 501 56 L 473 49 L 448 46 L 284 46 L 182 41 L 130 35 L 95 27 L 70 20 L 48 9 L 33 4 L 23 4 L 12 11 L 7 17 Z", "samples": [[0, 89, 89], [4, 25, 46], [8, 16, 58], [12, 11, 72], [16, 9, 71], [20, 6, 77], [24, 4, 81], [28, 4, 86], [32, 4, 90], [36, 5, 94], [40, 6, 97], [44, 8, 100], [48, 9, 103], [52, 11, 106], [56, 13, 108], [60, 15, 110], [64, 17, 112], [68, 19, 114], [72, 20, 115], [76, 22, 117], [80, 23, 118], [84, 24, 120], [88, 25, 121], [92, 26, 123], [96, 27, 124], [100, 28, 125], [104, 29, 127], [108, 30, 128], [112, 31, 129], [116, 31, 130], [120, 32, 131], [124, 33, 132], [128, 34, 133], [132, 35, 134], [136, 35, 135], [140, 36, 136], [144, 36, 137], [148, 37, 138], [152, 37, 138], [156, 38, 139], [160, 38, 140], [164, 39, 141], [168, 39, 142], [172, 39, 143], [176, 40, 144], [180, 40, 145], [184, 41, 146], [188, 41, 146], [192, 41, 147], [196, 41, 147], [200, 42, 148], [204, 42, 149], [208, 42, 150], [212, 43, 150], [216, 43, 151], [220, 43, 152], [224, 43, 152], [228, 44, 153], [232, 44, 153], [236, 44, 154], [240, 44, 154], [244, 44, 155], [248, 45, 155], [252, 45, 155], [256, 45, 156], [260, 45, 156], [264, 45, 157], [268, 45, 157], [272, 45, 158], [276, 45, 159], [280, 45, 160], [284, 46, 160], [288, 46, 160], [292, 46, 161], [296, 46, 161], [300, 46, 161], [304, 46, 161], [308, 46, 162], [312, 46, 162], [316, 46, 163], [320, 46, 163], [324, 46, 163], [328, 46, 164], [332, 46, 164], [336, 46, 165], [340, 46, 165], [344, 46, 166], [348, 46, 166], [352, 46, 166], [356, 46, 167], [360, 46, 167], [364, 46, 167], [368, 46, 167], [372, 46, 168], [376, 46, 168], [380, 46, 168], [384, 46, 168], [388, 46, 168], [392, 46, 169], [396, 46, 169], [400, 46, 169], [404, 46, 169], [408, 46, 169], [412, 46, 170], [416, 46, 170], [420, 46, 170], [424, 46, 170], [428, 46, 170], [432, 46, 170], [436, 46, 171], [440, 46, 171], [444, 46, 171], [448, 46, 171], [452, 47, 171], [456, 47, 171], [460, 48, 172], [464, 48, 172], [468, 49, 172], [472, 49, 172], [476, 50, 172], [480, 51, 172], [484, 52, 172], [488, 53, 173], [492, 54, 173], [496, 55, 173], [500, 55, 172], [504, 56, 172], [508, 56, 172], [512, 55, 172], [516, 54, 172], [520, 53, 172], [524, 51, 172], [528, 50, 172], [532, 50, 172], [536, 49, 172], [540, 48, 172], [544, 47, 172], [548, 47, 172], [552, 47, 171], [556, 46, 171], [560, 46, 171], [564, 46, 171], [568, 46, 170], [572, 46, 170], [576, 46, 170], [580, 46, 170], [584, 46, 170], [588, 46, 170], [592, 46, 170], [596, 46, 169], [600, 46, 169], [604, 46, 169], [608, 46, 169], [612, 46, 169], [616, 46, 168], [620, 46, 168], [624, 46, 168], [628, 46, 168], [632, 46, 167], [636, 46, 167], [640, 46, 167], [644, 46, 167], [648, 46, 167], [652, 46, 166], [656, 45, 166], [660, 45, 165], [664, 45, 165], [668, 45, 164], [672, 45, 164], [676, 46, 164], [680, 46, 164], [684, 46, 164], [688, 46, 163], [692, 45, 163], [696, 45, 162], [700, 45, 162], [704, 45, 161], [708, 45, 161], [712, 45, 161], [716, 45, 160], [720, 45, 160], [724, 45, 159], [728, 45, 159], [732, 45, 158], [736, 44, 158], [740, 44, 157], [744, 44, 157], [748, 44, 157], [752, 44, 156], [756, 44, 156], [760, 44, 155], [764, 43, 155], [768, 43, 154], [772, 43, 154], [776, 43, 153], [780, 43, 152], [784, 42, 152], [788, 42, 151], [792, 42, 150], [796, 42, 149], [800, 42, 149], [804, 41, 148], [808, 41, 148], [812, 40, 147], [816, 40, 146], [820, 40, 146], [824, 40, 145], [828, 39, 144], [832, 39, 143], [836, 39, 142], [840, 38, 141], [844, 38, 141], [848, 37, 140], [852, 37, 139], [856, 36, 138], [860, 36, 137], [864, 35, 136], [868, 35, 135], [872, 34, 134], [876, 33, 133], [880, 33, 132], [884, 32, 130], [888, 31, 129], [892, 30, 128], [896, 30, 128], [900, 29, 127], [904, 28, 125], [908, 27, 124], [912, 26, 123], [916, 25, 121], [920, 24, 120], [924, 23, 118], [928, 21, 117], [932, 20, 115], [936, 18, 114], [940, 16, 112], [944, 14, 110], [948, 13, 108], [952, 11, 105], [956, 9, 102], [960, 7, 99], [964, 5, 96], [968, 4, 93], [972, 4, 89], [976, 4, 85], [980, 5, 81], [984, 6, 76], [988, 8, 70], [992, 13, 64], [996, 18, 54], [1000, 36, 42], [1003, 89, 89]]};
+const CW = 1004, CH = 178, W = 1250, H = 165;
+const DPI = 1200;
+const OUT_W = Math.round(125/25.4 * DPI);
+const OUT_H = Math.round(16.5/25.4 * DPI);
+const curved = document.getElementById('curved');
+const flatCanvas = document.getElementById('flat');
+const flat = flatCanvas.getContext('2d');
+flat.imageSmoothingEnabled = true;
+flat.imageSmoothingQuality = 'high';
+const shapePath = new Path2D(SHAPE.path);
+const samples = SHAPE.samples;
+let layers = [];
+let selected = -1;
+let drag = null;
+let bg = '#111111';
+let transparent = true;
+let seq = 1;
+const fonts = [
+  ['Impact (sistema)','Impact, Arial Black, sans-serif'],
+  ['Anton','Anton, Impact, sans-serif'],
+  ['Oswald','Oswald, Arial, sans-serif'],
+  ['Teko','Teko, Impact, sans-serif'],
+  ['Kanit','Kanit, Arial, sans-serif'],
+  ['Orbitron','Orbitron, Arial, sans-serif'],
+  ['Rajdhani','Rajdhani, Arial, sans-serif'],
+  ['Audiowide','Audiowide, Arial, sans-serif'],
+  ['Bungee','Bungee, Impact, sans-serif'],
+  ['Impacto clássico','Arial Black, Impact, sans-serif']
+];
+
+const staticFamilies = new Set(['Anton','Audiowide','Bungee']);
+function fontFamily(l) { return String(l.font).split(',')[0].replaceAll('"','').trim(); }
+function fontSpec(l) {
+  const weight = staticFamilies.has(fontFamily(l)) ? '400' : (l.fontWeight || '700');
+  return `${weight} 150px ${l.font}`;
+}
+async function loadFontForLayer(layer) {
+  if (!layer || layer.kind !== 'text' || !document.fonts) return;
+  await document.fonts.load(fontSpec(layer), layer.text || 'PHR');
+}
+
+function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
+function lerp(a,b,t){return a+(b-a)*t;}
+function edge(x){
+  x = clamp(x,0,CW);
+  for(let i=1;i<samples.length;i++){
+    const a = samples[i-1], b = samples[i];
+    if(x <= b[0]){
+      const t = (x-a[0]) / Math.max(1,b[0]-a[0]);
+      return [lerp(a[1],b[1],t), lerp(a[2],b[2],t)];
+    }
+  }
+  const last = samples[samples.length-1];
+  return [last[1], last[2]];
+}
+function current(){return layers.find(l=>l.id===selected) || null;}
+function uid(){return seq++;}
+function addLayer(kind,name){
+  const layer = {
+    id: uid(), kind, name,
+    x: W/2, y: H/2, scale: 1, angle: 0,
+    color1: '#ffffff', color2: '#e63535', stroke: '#101010',
+    font: fonts[0][1], fontWeight: '900', text: 'PHR', image: null
+  };
+  if(kind==='text'){layer.scale=1.05; layer.name='Texto';}
+  layers.push(layer);
+  selected = layer.id;
+  refresh();
+  return layer;
+}
+function renderLayer(ctx,l){
+  ctx.save();
+  ctx.translate(l.x,l.y);
+  ctx.rotate(l.angle*Math.PI/180);
+  ctx.scale(l.scale,l.scale);
+  if(l.kind==='text'){
+    ctx.fillStyle = l.color1;
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    // Normalize the visual font height; condensed display families otherwise look tiny.
+    const txt = l.text || '';
+    ctx.font = fontSpec(l);
+    const m = ctx.measureText(txt || 'PHR');
+    const inkH = (m.actualBoundingBoxAscent || 105) + (m.actualBoundingBoxDescent || 0);
+    const normalize = Math.min(2.3, Math.max(.55, 105 / Math.max(1, inkH)));
+    ctx.scale(normalize, normalize);
+    ctx.fillText(txt,0,0);
+  } else if(l.kind==='image' && l.image) {
+    const baseH = 130; const ratio = l.image.naturalWidth / Math.max(1,l.image.naturalHeight); const ww = baseH * ratio;
+    ctx.drawImage(l.image,-ww/2,-baseH/2,ww,baseH);
+  }
+  ctx.restore();
+}
+function drawFlat(){
+  flat.clearRect(0,0,W,H);
+  if(!transparent){ flat.fillStyle = bg; flat.fillRect(0,0,W,H); }
+  for(const l of layers) renderLayer(flat,l);
+  const l = current();
+  if(l){
+    flat.save();
+    flat.strokeStyle='#e63535'; flat.lineWidth=2; flat.setLineDash([8,6]);
+    flat.strokeRect(l.x-88*l.scale, l.y-70*l.scale, 176*l.scale, 140*l.scale);
+    flat.restore();
+  }
+}
+function renderWarp(destCanvas, showGuide=true){
+  const w = destCanvas.width, h = destCanvas.height;
+  const ctx = destCanvas.getContext('2d');
+  ctx.clearRect(0,0,w,h);
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+  const art = document.createElement('canvas');
+  // Rasterize directly at final output resolution to preserve letter and image edges.
+  art.width = showGuide ? W : w; art.height = showGuide ? H : h;
+  const a = art.getContext('2d'); a.imageSmoothingEnabled = true; a.imageSmoothingQuality = 'high';
+  a.scale(art.width/W, art.height/H);
+  if(!transparent){ a.fillStyle = bg; a.fillRect(0,0,W,H); }
+  for(const l of layers) renderLayer(a,l);
+  for(let i=0;i<CW;i++){
+    const [t,b] = edge(i + .5);
+    const segH = Math.max(1,b-t);
+    ctx.drawImage(art, i/CW*art.width,0, art.width/CW,art.height, i*w/CW, t/CH*h, w/CW + .7, segH/CH*h);
+  }
+  ctx.save();
+  ctx.globalCompositeOperation = 'destination-in';
+  ctx.scale(w/CW,h/CH);
+  ctx.fillStyle = '#000';
+  ctx.fill(shapePath);
+  ctx.restore();
+  if(showGuide){
+    ctx.save(); ctx.scale(w/CW,h/CH); ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=Math.max(1,1.7*CW/w); ctx.stroke(shapePath); ctx.restore();
+  }
+}
+function update(){ drawFlat(); renderWarp(curved,true); }
+function refresh(){
+  update();
+  const l = current();
+  document.getElementById('layername').value = l ? l.name : '';
+  document.getElementById('textBlock').style.display = l && l.kind==='text' ? 'block' : 'none';
+  document.getElementById('colorBlock').style.display = l && l.kind==='text' ? 'block' : 'none';
+  document.getElementById('color1').disabled = !l || l.kind==='image';
+  document.getElementById('color2').disabled = !l || l.kind==='image';
+  document.getElementById('strokeColor').disabled = !l || l.kind==='image' || l.kind==='text';
+  document.getElementById('edittext').value = l?.text || '';
+  document.getElementById('font').value = l?.font || fonts[0][1];
+  document.getElementById('fontWeight').value = l?.fontWeight || '900';
+  document.getElementById('color1').value = l?.color1 || '#ffffff';
+  document.getElementById('color2').value = l?.color2 || '#e63535';
+  document.getElementById('strokeColor').value = l?.stroke || '#101010';
+  document.getElementById('size').value = l ? clamp(Math.round(l.scale*100),10,340) : 100;
+  document.getElementById('angle').value = l ? l.angle : 0;
+  document.getElementById('sizeValue').textContent = l ? Math.round(l.scale*100) + '%' : '—';
+  document.getElementById('angleValue').textContent = l ? l.angle + '°' : '—';
+  const box = document.getElementById('layers');
+  if(!layers.length){ box.innerHTML = '<div class="small">Adicione um texto ou uma imagem para começar.</div>'; }
+  else {
+    box.innerHTML = layers.slice().reverse().map(l=>`<button class="layer ${selected===l.id?'sel':''}" data-id="${l.id}"><span>${l.kind==='text'?'T':l.kind==='image'?'▣':'✦'} ${escapeHTML(l.name)}</span><span>${selected===l.id?'●':'›'}</span></button>`).join('');
+    box.querySelectorAll('.layer').forEach(btn=>btn.onclick = ()=>{ selected = Number(btn.dataset.id); refresh(); });
+  }
+}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+// Populate UI
+const fontSel = document.getElementById('font');
+fontSel.innerHTML = fonts.map(([label,val])=>`<option value="${val}">${label}</option>`).join('');
+// Events
+function applyToCurrent(fn){ const l = current(); if(!l) return; fn(l); refresh(); }
+document.getElementById('addText').onclick = ()=>{ const l = addLayer('text','Texto'); l.text = document.getElementById('newtext').value || 'PHR'; refresh(); };
+document.getElementById('upload').onchange = ev => {
+  const f = ev.target.files && ev.target.files[0]; if(!f) return;
+  const url = URL.createObjectURL(f); const img = new Image();
+  img.onload = ()=>{ const l = addLayer('image', f.name); l.image = img; l.scale=.95; refresh(); URL.revokeObjectURL(url); };
+  img.onerror = ()=>alert('Não foi possível abrir essa imagem.');
+  img.src = url; ev.target.value = '';
+};
+document.getElementById('edittext').addEventListener('input',e=>applyToCurrent(l=>l.text=e.target.value));
+document.getElementById('font').addEventListener('change',async e=>{
+  const family = e.target.value;
+  const layer = current();
+  if(!layer) return;
+  layer.font = family;
+  refresh();
+  if(document.fonts && document.fonts.load){
+    try { await loadFontForLayer(layer); } catch (err) { console.warn('Fonte indisponível:', family, err); }
+    refresh();
+  }
+});
+document.getElementById('fontWeight').addEventListener('change',async e=>{
+  const layer = current();
+  if(!layer) return;
+  layer.fontWeight = e.target.value;
+  refresh();
+  if(document.fonts && document.fonts.load){
+    try { await loadFontForLayer(layer); } catch (err) { console.warn('Fonte indisponível:', layer.font, err); }
+    refresh();
+  }
+});
+document.getElementById('color1').addEventListener('input',e=>applyToCurrent(l=>l.color1=e.target.value));
+document.getElementById('color2').addEventListener('input',e=>applyToCurrent(l=>l.color2=e.target.value));
+document.getElementById('strokeColor').addEventListener('input',e=>applyToCurrent(l=>l.stroke=e.target.value));
+document.getElementById('size').addEventListener('input',e=>applyToCurrent(l=>l.scale=Number(e.target.value)/100));
+document.getElementById('angle').addEventListener('input',e=>applyToCurrent(l=>l.angle=Number(e.target.value)));
+document.getElementById('background').addEventListener('input',e=>{ bg = e.target.value; update(); });
+document.getElementById('transparent').addEventListener('change',e=>{ transparent = e.target.checked; update(); });
+document.getElementById('remove').onclick = ()=>{ layers = layers.filter(x=>x.id!==selected); selected = layers.at(-1)?.id ?? -1; refresh(); };
+document.getElementById('front').onclick = ()=>{ const idx = layers.findIndex(x=>x.id===selected); if(idx>=0){ layers.push(...layers.splice(idx,1)); refresh(); } };
+document.getElementById('clear').onclick = ()=>{ if(confirm('Apagar todas as camadas?')){ layers=[]; selected=-1; refresh(); } };
+function pointerPos(e, c){
+  const r = c.getBoundingClientRect();
+  let x = (e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
+  if(c === curved){
+    const ix = x*CW; const [t,b] = edge(ix);
+    return { x:x*W, y: clamp(((y*CH - t)/Math.max(1,b-t))*H, -H, H*2) };
+  }
+  return { x:x*W, y:y*H };
+}
+function pickLayer(pt){
+  for(const l of [...layers].reverse()){
+    const xr = Math.max(92*l.scale, 40), yr = Math.max(70*l.scale, 24);
+    if(Math.abs(pt.x-l.x)<=xr && Math.abs(pt.y-l.y)<=yr) return l;
+  }
+  return null;
+}
+for(const c of [flatCanvas, curved]){
+  c.addEventListener('pointerdown',e=>{
+    const pt = pointerPos(e,c); const l = pickLayer(pt);
+    if(!l) return;
+    selected = l.id; drag = { id:e.pointerId, layer:l.id, dx:pt.x-l.x, dy:pt.y-l.y };
+    c.setPointerCapture(e.pointerId); refresh();
+  });
+  c.addEventListener('pointermove',e=>{
+    if(!drag || drag.id!==e.pointerId) return;
+    const l = current(); if(!l || l.id!==drag.layer) return;
+    const pt = pointerPos(e,c);
+    l.x = clamp(pt.x-drag.dx, 0, W);
+    l.y = clamp(pt.y-drag.dy, -H, H*2);
+    update();
+  });
+  c.addEventListener('pointerup',()=>{ drag=null; refresh(); });
+  c.addEventListener('pointercancel',()=>{ drag=null; refresh(); });
+}
+function renderOutputCanvas(){
+  const out = document.createElement('canvas'); out.width = OUT_W; out.height = OUT_H;
+  renderWarp(out,false); return out;
+}
+function saveData(href,name){ const a=document.createElement('a'); a.href=href; a.download=name; document.body.appendChild(a); a.click(); a.remove(); }
+async function ensureFonts(){
+  if(!document.fonts) return;
+  const pending = layers.filter(l=>l.kind==='text').map(l=>loadFontForLayer(l));
+  await Promise.allSettled(pending);
+  await document.fonts.ready;
+}
+function buildSvg(){
+  const png = renderOutputCanvas().toDataURL('image/png');
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="125mm" height="16.5mm" viewBox="0 0 ${OUT_W} ${OUT_H}"><title>PHR STUDIO mouthguard sticker</title><image x="0" y="0" width="${OUT_W}" height="${OUT_H}" xlink:href="${png}"/></svg>`;
+}
+document.getElementById('png').onclick = async ()=>{ await ensureFonts(); const out = renderOutputCanvas(); saveData(out.toDataURL('image/png'),'phr-studio-adesivo-125x16-5mm-1200dpi.png'); };
+document.getElementById('svg').onclick = async ()=>{ await ensureFonts(); const svg = buildSvg(); const blob = new Blob([svg],{type:'image/svg+xml'}); saveData(URL.createObjectURL(blob),'phr-studio-adesivo-125x16-5mm.svg'); };
+document.getElementById('print').onclick = async ()=>{
+  const w = window.open('','_blank');
+  await ensureFonts();
+  const png = renderOutputCanvas().toDataURL('image/png');
+  if(!w){ alert('Permita pop-ups para abrir a página de impressão.'); return; }
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>PHR STUDIO • Impressão</title><style>@page{size:A4;margin:10mm}html,body{margin:0;padding:0;font-family:Arial,sans-serif}body{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:10mm}img{width:125mm;height:16.5mm;display:block;image-rendering:auto}p{font-size:11px;color:#111;margin:0}</style></head><body><img src="${png}" alt="adesivo"><p>PHR STUDIO — adesivo 125 × 16,5 mm. Imprimir em 100%, sem ajustar à página.</p></body></html>`);
+  w.document.close(); setTimeout(()=>w.print(), 350);
+};
+// Start with a single editable text layer instead of predefined graphics.
+let b = addLayer('text','Texto');
+b.text='PHR'; b.scale=1.05; b.color1='#ffffff'; b.font=fonts[1][1];
+refresh();
+if(document.fonts && document.fonts.load){
+  Promise.allSettled(fonts.map(([label, family]) =>
+    document.fonts.load(`${staticFamilies.has(family.split(',')[0].replaceAll('"','').trim()) ? '400' : '700'} 150px ${family}`, 'PHR')
+  )).then(()=>refresh());
+}
+if(document.fonts && document.fonts.ready){
+  document.fonts.ready.then(()=>refresh()).catch(()=>{});
+  if(document.fonts.addEventListener) document.fonts.addEventListener('loadingdone',()=>refresh());
+}
+</script>
+</body>
+</html>
